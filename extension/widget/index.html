@@ -1,0 +1,121 @@
+<div id="uba-app">
+  <!-- Expanded Chat Window -->
+  <div id="uba-chat-window" class="uba-hidden">
+    <div class="uba-header">
+      <div class="uba-header-title">
+        <span class="uba-logo">✦</span>
+        <span class="uba-status-indicator"></span>
+        <h3>Browser Assistant</h3>
+      </div>
+      <div class="uba-header-actions">
+        <button id="uba-tab-chat" class="uba-icon-btn active" title="Chat">🗨️</button>
+        <button id="uba-tab-history" class="uba-icon-btn" title="History">📜</button>
+        <button id="uba-tab-settings" class="uba-icon-btn" title="Settings">💎</button>
+        <button id="uba-close-btn" class="uba-icon-btn" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Chat View -->
+    <div id="uba-view-chat" class="uba-view active">
+      <!-- Suggestions Chips -->
+      <div id="uba-suggestions" class="uba-suggestions-container uba-hidden"></div>
+
+      <div id="uba-messages">
+        <div class="uba-message bot">
+          <div class="uba-bubble" id="uba-greeting-bubble">Hello! I can help you understand this page. How can I help
+            you?</div>
+        </div>
+      </div>
+
+      <div class="uba-input-area">
+        <button id="uba-voice-btn" class="uba-action-btn uba-hidden" title="Voice Search">🎙️</button>
+        <input type="text" id="uba-input-field" placeholder="Ask anything about this page..." autofocus />
+        <button id="uba-send-btn" class="uba-action-btn uba-primary" title="Send Message">✦</button>
+      </div>
+    </div>
+
+    <!-- History View -->
+    <div id="uba-view-history" class="uba-view uba-hidden">
+      <div class="uba-view-title">Interaction History</div>
+      <div class="uba-view-scroll" id="uba-history-list">
+        <!-- History items populate here -->
+        <p class="uba-empty-text">No previous conversations yet.</p>
+      </div>
+    </div>
+
+    <!-- Settings & Profile View -->
+    <div id="uba-view-settings" class="uba-view uba-hidden">
+      <div class="uba-view-title">Preferences & Account</div>
+      <div class="uba-view-scroll">
+
+        <div class="uba-setting-card">
+          <div class="uba-setting-item">
+            <label>Interface Language</label>
+            <select id="uba-language-select">
+              <option value="auto">Auto Detect</option>
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Telugu">Telugu</option>
+              <option value="Tamil">Tamil</option>
+              <option value="Bengali">Bengali</option>
+              <option value="Marathi">Marathi</option>
+              <option value="Kannada">Kannada</option>
+              <option value="Malayalam">Malayalam</option>
+              <option value="Gujarati">Gujarati</option>
+              <option value="Punjabi">Punjabi</option>
+            </select>
+          </div>
+          <div class="uba-setting-item">
+            <label>Appearance Theme</label>
+            <select id="uba-theme-select">
+              <option value="dark">Neural Dark</option>
+              <option value="light">Glass Light</option>
+            </select>
+          </div>
+          <div class="uba-setting-item">
+            <label>Voice Interaction</label>
+            <label for="uba-voice-toggle" class="uba-switch">
+              <input type="checkbox" id="uba-voice-toggle-proxy">
+              <span class="uba-slider"></span>
+            </label>
+          </div>
+          <div class="uba-setting-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
+            <label>Live Page Language</label>
+            <div class="uba-btn-group">
+                <button id="uba-translate-page-btn" class="uba-btn primary" style="flex:1;">🌐 Translate Page</button>
+                <button id="uba-restore-page-btn" class="uba-btn ghost uba-hidden" style="flex:1;">🔄 Restore</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auth Form (Hidden when logged in) -->
+        <div id="uba-auth-form">
+          <p style="font-size: 13px; color: var(--uba-text-muted); margin-bottom: 12px; text-align: center;">Sign in to
+            sync your history across devices</p>
+          <input type="email" id="uba-email-input" placeholder="Email Address" class="uba-premium-input">
+          <input type="password" id="uba-password-input" placeholder="Password" class="uba-premium-input">
+          <p id="uba-auth-error" class="uba-auth-error"></p>
+          <div class="uba-btn-group">
+            <button id="uba-login-btn" class="uba-btn primary" style="flex:1;">Login</button>
+            <button id="uba-register-btn" class="uba-btn ghost" style="flex:1;">Join</button>
+          </div>
+        </div>
+
+        <!-- User Info (Visible when logged in) -->
+        <div id="uba-user-info" class="uba-hidden">
+          <div style="font-size: 13px; opacity: 0.8; margin-bottom: 4px;">Account</div>
+          <strong id="uba-user-email"></strong>
+          <div style="margin-top: 20px;">
+            <button id="uba-logout-btn" class="uba-btn ghost" style="width:100%;">Sign Out</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed Floating Button -->
+  <button id="uba-trigger-btn">
+    ✦
+  </button>
+</div>

@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Universal Browser Assistant",
+  "version": "1.0.0",
+  "description": "Multilingual floating AI assistant to help you understand web content and complete tasks.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["widget/script.js", "content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "widget/index.html",
+        "widget/style.css",
+        "widget/script.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

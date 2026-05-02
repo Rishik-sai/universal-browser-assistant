@@ -1,0 +1,580 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+:host {
+  /* Premium Design Tokens - HSL System */
+  --uba-brand: hsl(265, 89%, 66%);
+  --uba-brand-glow: hsla(265, 89%, 66%, 0.4);
+  --uba-brand-gradient: linear-gradient(135deg, hsl(265, 89%, 66%) 0%, hsl(285, 91%, 60%) 100%);
+  
+  /* Dark Theme Tokens (Default) */
+  --uba-bg: hsla(230, 20%, 8%, 0.85);
+  --uba-glass: hsla(0, 0%, 100%, 0.05);
+  --uba-border: hsla(0, 0%, 100%, 0.1);
+  --uba-text-main: hsl(0, 0%, 98%);
+  --uba-text-muted: hsl(230, 10%, 65%);
+  --uba-msg-bot: hsla(0, 0%, 100%, 0.06);
+  --uba-msg-user: var(--uba-brand-gradient);
+  
+  font-family: 'Outfit', sans-serif;
+}
+
+#uba-app {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+/* ─── Premium Chat Window ─── */
+#uba-chat-window {
+  width: 400px;
+  height: 640px;
+  max-height: 85vh;
+  background: var(--uba-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--uba-border);
+  border-radius: 28px;
+  box-shadow: 
+    0 30px 60px hsla(0, 0%, 0%, 0.5),
+    inset 0 0 0 1px hsla(0, 0%, 100%, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  transform-origin: bottom right;
+}
+
+#uba-chat-window.uba-hidden {
+  opacity: 0;
+  transform: scale(0.9) translateY(40px);
+  pointer-events: none;
+}
+
+/* ─── Header ─── */
+.uba-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: hsla(0, 0%, 100%, 0.03);
+  border-bottom: 1px solid var(--uba-border);
+}
+
+.uba-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uba-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: hsl(150, 80%, 50%);
+  box-shadow: 0 0 12px hsla(150, 80%, 50%, 0.6);
+  position: relative;
+}
+
+.uba-status-indicator::after {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid hsla(150, 80%, 50%, 0.3);
+  animation: uba-ping 2s infinite;
+}
+
+@keyframes uba-ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+.uba-header h3 {
+  margin: 0;
+  color: var(--uba-text-main);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.uba-header-actions {
+  display: flex;
+  background: hsla(0, 0%, 0%, 0.2);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.uba-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--uba-text-muted);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.uba-icon-btn:hover, .uba-icon-btn.active {
+  color: var(--uba-text-main);
+  background: hsla(0, 0%, 100%, 0.1);
+  transform: translateY(-1px);
+}
+
+.uba-icon-btn.active {
+  background: hsla(265, 89%, 66%, 0.2);
+  color: var(--uba-brand);
+}
+
+/* ─── Views ─── */
+.uba-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.uba-view.uba-hidden {
+  display: none !important;
+}
+
+.uba-view-title {
+  padding: 16px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--uba-brand);
+  background: hsla(265, 89%, 66%, 0.03);
+  border-bottom: 1px solid var(--uba-border);
+}
+
+/* ─── Messages ─── */
+#uba-messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: hsla(0,0%,100%,0.1) transparent;
+}
+
+.uba-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 88%;
+}
+
+.uba-message.user { align-self: flex-end; }
+.uba-message.bot { align-self: flex-start; }
+
+.uba-bubble {
+  padding: 14px 18px;
+  border-radius: 20px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  position: relative;
+  box-shadow: 0 4px 15px hsla(0, 0%, 0%, 0.1);
+}
+
+.uba-message.user .uba-bubble {
+  background: var(--uba-msg-user);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.uba-message.bot .uba-bubble {
+  background: var(--uba-msg-bot);
+  color: var(--uba-text-main);
+  border: 1px solid var(--uba-border);
+  border-bottom-left-radius: 4px;
+}
+
+/* ─── Input Area ─── */
+.uba-input-area {
+  padding: 20px;
+  background: hsla(0, 0%, 0%, 0.2);
+  border-top: 1px solid var(--uba-border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+#uba-input-field {
+  flex: 1;
+  background: hsla(0, 0%, 100%, 0.05);
+  border: 1px solid var(--uba-border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  color: var(--uba-text-main);
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#uba-input-field:focus {
+  border-color: var(--uba-brand);
+  background: hsla(0, 0%, 100%, 0.08);
+  box-shadow: 0 0 0 4px var(--uba-brand-glow);
+}
+
+.uba-action-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: none;
+  background: hsla(0, 0%, 100%, 0.08);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 18px;
+}
+
+.uba-action-btn:hover {
+  background: hsla(0, 0%, 100%, 0.15);
+  transform: scale(1.05);
+}
+
+.uba-action-btn.uba-primary {
+  background: var(--uba-brand-gradient);
+  box-shadow: 0 8px 20px hsla(265, 89%, 66%, 0.3);
+}
+
+/* ─── Settings & Auth Card ─── */
+.uba-view-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.uba-setting-card {
+  background: hsla(0, 0%, 100%, 0.03);
+  border: 1px solid var(--uba-border);
+  border-radius: 20px;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+.uba-setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--uba-border);
+}
+
+.uba-setting-item:last-child { border-bottom: none; }
+
+.uba-setting-item label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--uba-text-main);
+}
+
+select {
+  background: hsla(0, 0%, 0%, 0.3);
+  color: white;
+  border: 1px solid var(--uba-border);
+  padding: 8px 12px;
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+/* Auth Section Fix & Redesign */
+#uba-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+#uba-auth-form.uba-hidden {
+  display: none !important;
+}
+
+#uba-auth-form input {
+  background: hsla(0, 0%, 0%, 0.2) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--uba-border) !important;
+  padding: 14px !important;
+  color: var(--uba-text-main) !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.uba-btn-group {
+  display: flex;
+  gap: 12px;
+}
+
+.uba-btn {
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.uba-btn.primary {
+  background: var(--uba-brand-gradient);
+  color: white;
+  box-shadow: 0 4px 15px hsla(265, 89%, 66%, 0.3);
+}
+
+.uba-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px hsla(265, 89%, 66%, 0.4);
+}
+
+.uba-btn.ghost {
+  background: hsla(0, 0%, 100%, 0.05);
+  color: var(--uba-text-main);
+  border: 1px solid var(--uba-border);
+}
+
+.uba-btn.ghost:hover {
+  background: hsla(0, 0%, 100%, 0.1);
+  border-color: var(--uba-brand);
+}
+
+/* User Card */
+#uba-user-info {
+  background: var(--uba-brand-gradient);
+  border-radius: 20px;
+  padding: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#uba-user-info::before {
+  content: '✨';
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  font-size: 60px;
+  opacity: 0.1;
+}
+
+#uba-user-info.uba-hidden {
+  display: none !important;
+}
+
+#uba-user-email {
+  font-size: 18px;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ─── Light Theme Overrides ─── */
+#uba-chat-window.theme-light {
+  --uba-bg: hsla(230, 20%, 98%, 0.95);
+  --uba-glass: hsla(0, 0%, 0%, 0.03);
+  --uba-border: hsla(0, 0%, 0%, 0.08);
+  --uba-text-main: hsl(230, 20%, 12%);
+  --uba-text-muted: hsl(230, 10%, 45%);
+  --uba-msg-bot: hsl(0, 0%, 100%);
+  color: var(--uba-text-main);
+}
+
+#uba-chat-window.theme-light .uba-bubble {
+  box-shadow: 0 2px 10px hsla(0, 0%, 0%, 0.05);
+}
+
+#uba-chat-window.theme-light .uba-bubble strong {
+  color: var(--uba-brand);
+}
+
+/* Floating Trigger Button */
+#uba-trigger-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 24px;
+  background: var(--uba-brand-gradient);
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 16px 32px var(--uba-brand-glow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+#uba-trigger-btn:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 20px 40px var(--uba-brand-glow);
+}
+
+/* Transitions */
+.uba-hidden {
+  display: none !important;
+}
+
+@keyframes uba-slide-up {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.uba-message {
+  animation: uba-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Step Row Styling ─── */
+.uba-step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: hsla(0, 0%, 100%, 0.05);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  padding: 12px;
+  border-radius: 12px;
+  margin: 10px 0;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.uba-step-row:hover {
+  transform: translateY(-2px);
+  background: hsla(0, 0%, 100%, 0.1);
+  border-color: var(--uba-brand);
+}
+
+.uba-step-badge {
+  background: linear-gradient(135deg, var(--uba-brand), #a78bfa);
+  color: white;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px hsla(250, 95%, 70%, 0.3);
+}
+
+.uba-step-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: hsla(0, 0%, 100%, 0.95);
+  flex: 1;
+}
+
+/* ─── Premium History Cards ─── */
+.uba-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: hsla(0, 0%, 100%, 0.05);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.uba-history-item:hover {
+  background: hsla(0, 0%, 100%, 0.1);
+  border-color: var(--uba-brand);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.2);
+}
+
+.uba-history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.uba-history-text {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--uba-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.uba-history-time {
+  font-size: 11.5px;
+  color: var(--uba-text-muted);
+}
+
+.uba-history-icon {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+/* ─── Top Suggestion Bar ─── */
+.uba-suggestions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: none;
+  background: transparent;
+}
+
+.uba-suggestion-chip {
+  background: hsla(265, 89%, 66%, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--uba-brand);
+  color: var(--uba-text-main);
+  padding: 10px 18px;
+  border-radius: 24px;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.15);
+  animation: uba-pop-in 0.4s ease forwards;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+@keyframes uba-pop-in {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.uba-suggestion-chip:nth-child(1) { animation-delay: 0.1s; }
+.uba-suggestion-chip:nth-child(2) { animation-delay: 0.2s; }
+.uba-suggestion-chip:nth-child(3) { animation-delay: 0.3s; }
+
+.uba-suggestion-chip:hover {
+  background: var(--uba-brand-gradient);
+  border-color: transparent;
+  color: white;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px var(--uba-brand-glow);
+}
