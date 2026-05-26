@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+motor
+pyjwt
+bcrypt
+python-dotenv
+langchain-groq
+langchain-core
+pydantic
