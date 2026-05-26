@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge" alt="Manifest V3 Ready">
-  <img src="https://img.shields.io/badge/Node.js-v18+-green?style=for-the-badge" alt="Node Version">
-  <img src="https://img.shields.io/badge/Express.js-5.0-lightgrey?style=for-the-badge" alt="Express Framework">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge" alt="Python Version">
+  <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393?style=for-the-badge" alt="FastAPI Framework">
   <img src="https://img.shields.io/badge/MongoDB-Mongoose-brightgreen?style=for-the-badge" alt="Mongoose Database">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT Licensed">
 </p>
@@ -20,7 +20,7 @@
 
 ## 🌟 Overview
 
-**Universal Browser Assistant (UBA)** is a state-of-the-art browser extension widget that injects a context-aware AI chat sidebar into any website. Powered by a local Node.js Express server communicating with LLMs (e.g., Llama-3.1 via Groq), UBA is designed to help users instantly summarize page content, query context, perform web searches, and even translate entire web pages in-place into multiple Indian regional languages.
+**Universal Browser Assistant (UBA)** is a state-of-the-art browser extension widget that injects a context-aware AI chat sidebar into any website. Powered by a local Python FastAPI server communicating with LLMs (e.g., Llama-3.1 via Groq), UBA is designed to help users instantly summarize page content, query context, perform web searches, and even translate entire web pages in-place into multiple Indian regional languages.
 
 The extension is designed with a premium, glassmorphism UI overlay isolated inside a **Shadow DOM** to prevent stylesheet clashes with host websites.
 
@@ -54,8 +54,8 @@ graph TD
     end
 
     subgraph Server [Backend REST API]
-        B <-->|HTTP POST / GET| API[Express server.js]
-        API <-->|Mongoose ODM| DB[(MongoDB)]
+        B <-->|HTTP POST / GET| API[FastAPI main.py]
+        API <-->|Motor (Async)| DB[(MongoDB)]
         API <-->|LangChain core| AI[Groq Llama-3.1 LLM]
     end
 ```
@@ -68,16 +68,17 @@ graph TD
 universal-browser-assistant/
 ├── assets/                     # Branding assets (logos, screenshots)
 │   └── logo.png
-├── backend/                    # Express REST API Server
-│   ├── src/
-│   │   ├── controllers/       # Route request handlers
+├── backend/                    # FastAPI REST API Server
+│   ├── app/
 │   │   ├── middleware/        # Authentication middlewares
-│   │   ├── models/            # MongoDB schema models (User, History)
-│   │   ├── routes/            # Express route endpoints
-│   │   └── services/          # LangChain pipeline configurations
+│   │   ├── routes/            # FastAPI route endpoints
+│   │   ├── services/          # LangChain pipeline configurations
+│   │   ├── config.py          # Environment configs
+│   │   ├── db.py              # MongoDB connection
+│   │   ├── main.py            # FastAPI entrypoint
+│   │   └── utils.py           # Helper functions
 │   ├── .env                    # Environment variables
-│   ├── server.js              # Server entrypoint
-│   └── package.json
+│   └── requirements.txt
 ├── extension/                  # Chrome Extension Package
 │   ├── assets/                # Local extension assets
 │   ├── widget/                # Widget HTML, CSS, and UI Script
@@ -98,7 +99,7 @@ universal-browser-assistant/
 
 ### Prerequisites
 
-*   [Node.js](https://nodejs.org/) (version 18 or higher recommended)
+*   [Python](https://www.python.org/) (version 3.10 or higher recommended)
 *   [MongoDB](https://www.mongodb.com/) (running locally or via MongoDB Atlas)
 *   [Groq API Key](https://console.groq.com/) (for Chat and Translation models)
 
@@ -110,25 +111,29 @@ universal-browser-assistant/
     ```bash
     cd backend
     ```
-2.  Install dependencies:
+2.  Set up a virtual environment (optional but recommended):
     ```bash
-    npm install
+    python -m venv .venv
+    # Activate on Windows:
+    .venv\Scripts\activate
+    # Activate on Mac/Linux:
+    source .venv/bin/activate
     ```
-3.  Configure your environment variables. Create a `.env` file in the `backend/` directory:
+3.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  Configure your environment variables. Create a `.env` file in the `backend/` directory:
     ```env
     PORT=3000
     GROQ_API_KEY="your-groq-api-key"
     MONGO_URI="mongodb://localhost:27017/uba_assistant"
     JWT_SECRET="your-jwt-secure-secret-key"
     ```
-4.  Start the database server and run the backend API server:
-    *   **Development mode (using nodemon):**
+5.  Start the database server and run the backend API server:
+    *   **Development mode (using uvicorn):**
         ```bash
-        npm run dev
-        ```
-    *   **Production mode:**
-        ```bash
-        npm start
+        uvicorn app.main:app --reload --port 3000
         ```
 
 The server should now be running at `http://localhost:3000`. You can verify by visiting `http://localhost:3000/health`.
