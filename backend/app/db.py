@@ -4,9 +4,10 @@ import logging
 
 logger = logging.getLogger("uvicorn.error")
 
+import certifi
 from pymongo.errors import ConfigurationError
 
-client = AsyncIOMotorClient(config.MONGO_URI)
+client = AsyncIOMotorClient(config.MONGO_URI, tlsCAFile=certifi.where())
 # Get the database from default source, or fallback to 'uba_assistant'
 try:
     db = client.get_default_database()
