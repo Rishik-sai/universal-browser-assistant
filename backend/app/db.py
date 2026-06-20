@@ -4,9 +4,14 @@ import logging
 
 logger = logging.getLogger("uvicorn.error")
 
+from pymongo.errors import ConfigurationError
+
 client = AsyncIOMotorClient(config.MONGO_URI)
-# Get the database from default source (e.g. uba_assistant in MONGO_URI)
-db = client.get_default_database()
+# Get the database from default source, or fallback to 'uba_assistant'
+try:
+    db = client.get_default_database()
+except ConfigurationError:
+    db = client.get_database("uba_assistant")
 
 async def init_db():
     try:
