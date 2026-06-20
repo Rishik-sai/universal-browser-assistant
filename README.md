@@ -172,7 +172,7 @@ The server should now be running at `http://localhost:3000`. You can verify by v
 
 ## 📡 API Endpoints
 
-All endpoints are hosted under `https://uba-assistant-api.onrender.com/api` (or `http://localhost:3000/api` locally).
+All endpoints are hosted under `https://uba-8or4.onrender.com/api` (or `http://localhost:3000/api` locally).
 
 | Method | Endpoint | Description | Auth Required |
 |:---|:---|:---|:---|

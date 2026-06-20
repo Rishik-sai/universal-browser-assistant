@@ -1,4 +1,4 @@
-const BASE_URL = 'https://uba-assistant-api.onrender.com/api';
+const BASE_URL = 'https://uba-8or4.onrender.com/api';
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Universal Browser Assistant Installed");
@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       fetch(`${BASE_URL}/chat`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${data.ubaToken}`
         },
@@ -114,7 +114,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (!data.ubaToken) return sendResponse({ success: false, error: "Please login." });
       fetch(`${BASE_URL}/chat/translate-bulk`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${data.ubaToken}`
         },
