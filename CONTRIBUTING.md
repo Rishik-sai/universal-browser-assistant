@@ -10,7 +10,7 @@ Fork the repository on GitHub to your own account.
 ### 2. Clone the Repository
 Clone your fork locally:
 ```bash
-git clone https://github.com/your-username/universal-browser-assistant.git
+git clone https://github.com/Rishik-sai/universal-browser-assistant.git
 cd universal-browser-assistant
 ```
 
@@ -44,10 +44,10 @@ Then, open a Pull Request (PR) against the main repository.
 
 ## Coding Standards
 
-### Backend (Node.js/Express)
-- Use standard JavaScript conventions.
-- Place controllers in `src/controllers`, routes in `src/routes`, models in `src/models`, and services in `src/services`.
-- Secure endpoints with the authentication middleware.
+### Backend (Python/FastAPI)
+- Use standard Python typing conventions and asynchronous (`async`/`await`) patterns.
+- Place FastAPI routers in `app/routes`, DB logic in `app/db.py`, and core LLM services in `app/services/`.
+- Secure endpoints using the JWT authentication dependency `get_current_user`.
 
 ### Extension
 - Keep styling rules confined to `widget/style.css` using custom prefixing (e.g. `.uba-...`) to prevent styling conflicts on host websites.

@@ -9,7 +9,7 @@ date: May 2026
 **Tagline:** Context-Aware AI directly in your Browser
 **Author:** Rishik Sai (istyl)
 **Tech Stack:** Vanilla JS (Extension), Python, FastAPI, MongoDB, LangChain, Groq (LLaMA-3)
-**GitHub Repository Link:** [Add Link Here]
+**GitHub Repository Link:** https://github.com/Rishik-sai/universal-browser-assistant
 **Date:** May 2026
 **Version:** 1.0.0
 
