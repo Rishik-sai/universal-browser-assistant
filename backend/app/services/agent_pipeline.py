@@ -1,21 +1,61 @@
 import json
 import logging
+import redis
 from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage, messages_to_dict, messages_from_dict
+from langchain_core.tools import tool
+from tavily import TavilyClient
 from app import config
 
 logger = logging.getLogger("uvicorn.error")
 
-# In-memory session store for conversational history
-memory_store = {}
+# Persistent session store for conversational history
+redis_client = None
+
+def get_redis_client():
+    global redis_client
+    if redis_client is None:
+        redis_client = redis.Redis.from_url(config.REDIS_URL, decode_responses=True)
+    return redis_client
+
+def get_session_history(session_id: str) -> list:
+    client = get_redis_client()
+    try:
+        data = client.get(f"session:{session_id}")
+        if data:
+            return messages_from_dict(json.loads(data))
+    except Exception as e:
+        logger.error(f"Error reading session history from Redis: {e}")
+    return []
+
+def save_session_history(session_id: str, messages: list):
+    client = get_redis_client()
+    try:
+        data = json.dumps(messages_to_dict(messages))
+        client.set(f"session:{session_id}", data, ex=86400) # 24 hour expiry
+    except Exception as e:
+        logger.error(f"Error saving session history to Redis: {e}")
+
+@tool
+def web_search(query: str) -> str:
+    """Searches the web for up-to-date information."""
+    if not config.TAVILY_API_KEY:
+        return "Search failed: No TAVILY_API_KEY configured."
+    try:
+        tavily = TavilyClient(api_key=config.TAVILY_API_KEY)
+        response = tavily.search(query=query, search_depth="basic")
+        return str(response.get("results", []))
+    except Exception as e:
+        return f"Search failed: {str(e)}"
 
 class AgentPipeline:
     def __init__(self):
         # Initialized lazily or at startup
-        self.model = ChatGroq(
+        base_model = ChatGroq(
             model="llama-3.1-8b-instant",
             groq_api_key=config.GROQ_API_KEY
         )
+        self.model = base_model.bind_tools([web_search])
 
     async def process_message(
         self,
@@ -27,9 +67,7 @@ class AgentPipeline:
         dom_snapshot: str = ""
     ):
         is_init = user_message == "[INIT_SUGGESTIONS]"
-
-        if session_id not in memory_store:
-            memory_store[session_id] = []
+        history = get_session_history(session_id)
 
         # Step 1: Handle Initial Suggestions Mode
         if is_init:
@@ -80,11 +118,11 @@ class AgentPipeline:
         search_directive = ""
         clean_message = user_message
         if clean_message.startswith("[WEB_SEARCH]"):
-            search_directive = "\n\n[WEB SEARCH TRIGGERED]\nThe user has explicitly requested to SEARCH THE WEB for the selected text. Act as a search engine and provide a comprehensive, highly accurate, and up-to-date answer from your extensive knowledge base regarding the highlighted query."
+            search_directive = "\n\n[WEB SEARCH TRIGGERED]\nThe user has explicitly requested to SEARCH THE WEB for the selected text. You MUST use the 'web_search' tool to find up-to-date information before answering."
             clean_message = clean_message.replace("[WEB_SEARCH]", "").strip()
 
         # Save regular user message to memory
-        memory_store[session_id].append(HumanMessage(content=clean_message))
+        history.append(HumanMessage(content=clean_message))
 
         # Step 2: Language Directive
         if language and language.lower() != "auto":
@@ -127,12 +165,28 @@ class AgentPipeline:
 
         messages = [
             SystemMessage(content=system_instruction),
-            *memory_store[session_id],
+            *history,
             SystemMessage(content=final_reminder)
         ]
 
         try:
             ai_response = await self.model.ainvoke(messages)
+            
+            # Agentic tool calling loop
+            if ai_response.tool_calls:
+                history.append(ai_response)
+                messages.append(ai_response)
+                
+                for tool_call in ai_response.tool_calls:
+                    if tool_call["name"] == "web_search":
+                        tool_result = web_search.invoke(tool_call["args"])
+                        tool_msg = ToolMessage(content=tool_result, tool_call_id=tool_call["id"])
+                        history.append(tool_msg)
+                        messages.append(tool_msg)
+                
+                # Re-invoke the model with tool results
+                ai_response = await self.model.ainvoke(messages)
+
             full_content = ai_response.content
             final_reply = full_content
             suggestions = []
@@ -146,7 +200,8 @@ class AgentPipeline:
                     logger.error(f"Error parsing suggestions JSON in chat response: {e}")
 
             # Save AI response to memory
-            memory_store[session_id].append(AIMessage(content=final_reply))
+            history.append(AIMessage(content=final_reply))
+            save_session_history(session_id, history)
 
             return {
                 "reply": final_reply,

@@ -7,3 +7,7 @@ python-dotenv
 langchain-groq
 langchain-core
 pydantic
+tavily-python
+pytest
+httpx
+redis
