@@ -26,5 +26,8 @@ jobs:
 
     - name: Run tests with pytest
       working-directory: ./backend
+      env:
+        GROQ_API_KEY: "dummy-key-for-ci"
+        TAVILY_API_KEY: "dummy-key-for-ci"
       run: |
         pytest
