@@ -56,6 +56,10 @@ class AgentPipeline:
             groq_api_key=config.GROQ_API_KEY
         )
         self.model = base_model.bind_tools([web_search])
+        self.translation_model = ChatGroq(
+            model="llama-3.1-8b-instant",
+            groq_api_key=config.GROQ_API_KEY
+        )
 
     async def process_message(
         self,
@@ -63,8 +67,7 @@ class AgentPipeline:
         url_context: str,
         session_id: str,
         language: str = "auto",
-        page_text: str = "",
-        dom_snapshot: str = ""
+        page_text: str = ""
     ):
         is_init = user_message == "[INIT_SUGGESTIONS]"
         history = get_session_history(session_id)
@@ -236,7 +239,7 @@ class AgentPipeline:
         """
 
         try:
-            response = await self.model.ainvoke([HumanMessage(content=prompt)])
+            response = await self.translation_model.ainvoke([HumanMessage(content=prompt)])
             content = response.content.strip()
             parts = [s.strip() for s in content.split("|||")]
 

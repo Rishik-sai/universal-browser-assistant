@@ -35,6 +35,7 @@ jobs:
       env:
         GROQ_API_KEY: "dummy-key-for-ci"
         TAVILY_API_KEY: "dummy-key-for-ci"
+        JWT_SECRET: "dummy-jwt-for-ci"
         MONGO_URI: "mongodb://localhost:27017/uba_test"
       run: |
         pytest

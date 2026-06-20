@@ -55,8 +55,10 @@ graph TD
 
     subgraph Server [Backend REST API]
         B <-->|HTTP POST / GET| API[FastAPI main.py]
-        API <-->|Motor (Async)| DB[(MongoDB)]
+        API <-->|Motor (Async)| DB[(MongoDB Atlas)]
+        API <-->|Redis Client| Cache[(Redis Session Store)]
         API <-->|LangChain core| AI[Groq Llama-3.1 LLM]
+        API <-->|Tavily API| Search[Tavily Web Search]
     end
 ```
 
@@ -100,8 +102,10 @@ universal-browser-assistant/
 ### Prerequisites
 
 *   [Python](https://www.python.org/) (version 3.10 or higher recommended)
-*   [MongoDB](https://www.mongodb.com/) (running locally or via MongoDB Atlas)
+*   [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (or local MongoDB)
+*   [Redis](https://redis.io/) (running locally or via a provider like Upstash)
 *   [Groq API Key](https://console.groq.com/) (for Chat and Translation models)
+*   [Tavily API Key](https://tavily.com/) (for Web Search)
 
 ---
 
@@ -127,7 +131,9 @@ universal-browser-assistant/
     ```env
     PORT=3000
     GROQ_API_KEY="your-groq-api-key"
-    MONGO_URI="mongodb://localhost:27017/uba_assistant"
+    TAVILY_API_KEY="your-tavily-api-key"
+    MONGO_URI="mongodb+srv://<user>:<password>@cluster0.mongodb.net/uba_assistant"
+    REDIS_URL="redis://localhost:6379"
     JWT_SECRET="your-jwt-secure-secret-key"
     ```
 5.  Start the database server and run the backend API server:
@@ -166,7 +172,7 @@ The server should now be running at `http://localhost:3000`. You can verify by v
 
 ## 📡 API Endpoints
 
-All endpoints are hosted under `http://localhost:3000/api`.
+All endpoints are hosted under `https://uba-assistant-api.onrender.com/api` (or `http://localhost:3000/api` locally).
 
 | Method | Endpoint | Description | Auth Required |
 |:---|:---|:---|:---|

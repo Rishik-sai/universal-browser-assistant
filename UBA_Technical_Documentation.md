@@ -41,8 +41,9 @@ Significant reduction in tab-switching overhead, improved accessibility of forei
 The system operates on a decoupled client-server architecture:
 1. **Client (Chrome Extension):** A Manifest V3 extension containing content scripts that interact with the DOM (using Shadow DOM for CSS isolation) and a background Service Worker that manages cross-origin API communication and token storage.
 2. **Server (FastAPI Backend):** A robust Python web server that handles API routing, authentication (JWT), database operations, and AI orchestration.
-3. **Database (MongoDB):** A NoSQL data store maintaining user credentials and domain-specific chat histories.
-4. **AI Layer (Groq & LangChain):** The backend communicates with Groq's LPUs via LangChain to generate high-speed LLM inferences based on page context.
+3. **Database (MongoDB Atlas):** A NoSQL data store maintaining user credentials and domain-specific chat histories.
+4. **State Store (Redis):** An ultra-fast in-memory store for conversational histories, allowing stateless horizontal scaling.
+5. **AI Layer (Groq, LangChain & Tavily):** The backend communicates with Groq's LPUs via LangChain to generate high-speed LLM inferences, and can fetch real-time web data via Tavily.
 
 ### Folder structure explanation
 
@@ -228,7 +229,7 @@ user = await db.users.find_one({"email": email_clean})
 - **Latency Reduction:** By using `await`, the server thread is immediately yielded back to the event loop while MongoDB processes the query. This allows a single FastAPI worker to handle thousands of concurrent chat requests without blocking.
 
 ### Memory Optimization
-- **Session Memory:** LangChain memory is managed via an in-memory dictionary `memory_store[session_id]`. This acts as an ultra-fast L1 cache for active conversations, eliminating the need to re-fetch the past 10 messages from MongoDB for every single query during an active session.
+- **Session Memory:** LangChain memory is managed via an external **Redis** store. This acts as an ultra-fast L1 cache for active conversations, eliminating the need to re-fetch the past 10 messages from MongoDB for every query, while allowing the FastAPI instances to scale horizontally statelessly.
 
 ---
 
@@ -249,9 +250,11 @@ user = await db.users.find_one({"email": email_clean})
 3. Install dependencies: `pip install -r requirements.txt`.
 4. Create a `.env` file with:
    ```env
-   MONGO_URI=mongodb://localhost:27017/uba_assistant
+   MONGO_URI=mongodb+srv://<user>:<password>@cluster0.mongodb.net/uba_assistant
+   REDIS_URL=redis://localhost:6379
    JWT_SECRET=your_super_secret_key
    GROQ_API_KEY=your_groq_key
+   TAVILY_API_KEY=your_tavily_key
    ```
 5. Run the backend: `uvicorn app.main:app --reload --port 3000`.
 6. Load the `extension/` folder in Chrome via `chrome://extensions` -> Load Unpacked.
@@ -273,7 +276,7 @@ user = await db.users.find_one({"email": email_clean})
 
 # 14. FUTURE IMPROVEMENTS
 
-- **Scalability:** Migrate the in-memory `memory_store` to Redis to support horizontally scaling FastAPI across multiple worker nodes (Kubernetes).
+- **Scalability:** Horizontal scaling across multiple worker nodes (e.g. Kubernetes) is now fully supported thanks to the migration of conversational memory to Redis.
 - **AI Upgrades:** Implement a local Vector Database (like ChromaDB or Faiss) on the backend to allow for persistent, cross-domain semantic search (e.g., "What did I read about quantum physics last week?").
 - **Enterprise-grade Upgrades:** Implement WebSocket connections instead of REST polling for a more fluid, typing-indicator-style chat experience.
 

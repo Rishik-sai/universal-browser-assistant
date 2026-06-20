@@ -13,7 +13,6 @@ class ChatRequest(BaseModel):
     sessionId: Optional[str] = None
     language: Optional[str] = "auto"
     pageText: Optional[str] = ""
-    domSnapshot: Optional[str] = ""
 
 class TranslateRequest(BaseModel):
     texts: Optional[list[str]] = None
@@ -33,8 +32,7 @@ async def chat(payload: ChatRequest, current_user: dict = Depends(get_current_us
             url_context=payload.url,
             session_id=session_id,
             language=payload.language,
-            page_text=payload.pageText,
-            dom_snapshot=payload.domSnapshot
+            page_text=payload.pageText
         )
         return {
             "success": True,

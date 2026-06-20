@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = 'https://uba-assistant-api.onrender.com/api';
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Universal Browser Assistant Installed");
