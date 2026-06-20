@@ -9,6 +9,12 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
 
     steps:
     - uses: actions/checkout@v3
@@ -29,5 +35,6 @@ jobs:
       env:
         GROQ_API_KEY: "dummy-key-for-ci"
         TAVILY_API_KEY: "dummy-key-for-ci"
+        MONGO_URI: "mongodb://localhost:27017/uba_test"
       run: |
         pytest
