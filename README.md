@@ -20,7 +20,7 @@
 
 ## 🌟 Overview
 
-**Universal Browser Assistant (UBA)** is a state-of-the-art browser extension widget that injects a context-aware AI chat sidebar into any website. Powered by a local Python FastAPI server communicating with LLMs (e.g., Llama-3.1 via Groq), UBA is designed to help users instantly summarize page content, query context, perform web searches, and even translate entire web pages in-place into multiple Indian regional languages.
+**Universal Browser Assistant (UBA)** is a state-of-the-art browser extension widget that injects a context-aware AI chat sidebar into any website. Powered by a Python FastAPI server communicating with LLMs (e.g., Llama-3.1 via Groq), UBA is designed to help users instantly summarize page content, query context, perform web searches, and even translate entire web pages in-place into multiple Indian regional languages.
 
 The extension is designed with a premium, glassmorphism UI overlay isolated inside a **Shadow DOM** to prevent stylesheet clashes with host websites.
 
