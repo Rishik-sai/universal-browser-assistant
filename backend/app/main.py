@@ -4,8 +4,11 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.db import init_db
 from app.routes import auth, chat, history
+from app.limiter import limiter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -14,6 +17,8 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="Universal Browser Assistant API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 import os
 

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from app.db import db
 from app.utils import hash_password, verify_password, sign_token
+from app.limiter import limiter
 
 router = APIRouter()
 
@@ -11,7 +12,8 @@ class AuthModel(BaseModel):
     password: str = None
 
 @router.post("/register")
-async def register(payload: AuthModel):
+@limiter.limit("5/minute")
+async def register(request: Request, payload: AuthModel):
     email = payload.email
     password = payload.password
     
@@ -47,7 +49,8 @@ async def register(payload: AuthModel):
     }
 
 @router.post("/login")
-async def login(payload: AuthModel):
+@limiter.limit("10/minute")
+async def login(request: Request, payload: AuthModel):
     email = payload.email
     password = payload.password
     

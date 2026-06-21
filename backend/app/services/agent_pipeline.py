@@ -4,6 +4,7 @@ import redis
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage, messages_to_dict, messages_from_dict
 from langchain_core.tools import tool
+from pydantic import BaseModel, Field
 from tavily import TavilyClient
 from app import config
 
@@ -36,9 +37,12 @@ def save_session_history(session_id: str, messages: list):
     except Exception as e:
         logger.error(f"Error saving session history to Redis: {e}")
 
-@tool
+class WebSearchInput(BaseModel):
+    query: str = Field(description="The search query string to look up on the web. Must be a valid JSON string.")
+
+@tool("web_search", args_schema=WebSearchInput)
 def web_search(query: str) -> str:
-    """Searches the web for up-to-date information."""
+    """Searches the web for up-to-date information using a search query."""
     if not config.TAVILY_API_KEY:
         return "Search failed: No TAVILY_API_KEY configured."
     try:
@@ -51,11 +55,11 @@ def web_search(query: str) -> str:
 class AgentPipeline:
     def __init__(self):
         # Initialized lazily or at startup
-        base_model = ChatGroq(
+        self.base_model = ChatGroq(
             model="llama-3.1-8b-instant",
             groq_api_key=config.GROQ_API_KEY
         )
-        self.model = base_model.bind_tools([web_search])
+        self.model = self.base_model.bind_tools([web_search])
         self.translation_model = ChatGroq(
             model="llama-3.1-8b-instant",
             groq_api_key=config.GROQ_API_KEY
@@ -92,7 +96,7 @@ class AgentPipeline:
             """
 
             try:
-                response = await self.model.ainvoke([HumanMessage(content=init_prompt)])
+                response = await self.base_model.ainvoke([HumanMessage(content=init_prompt)])
                 content = response.content
                 suggestions = []
                 if "SUGGESTIONS:" in content:
@@ -121,7 +125,7 @@ class AgentPipeline:
         search_directive = ""
         clean_message = user_message
         if clean_message.startswith("[WEB_SEARCH]"):
-            search_directive = "\n\n[WEB SEARCH TRIGGERED]\nThe user has explicitly requested to SEARCH THE WEB for the selected text. You MUST use the 'web_search' tool to find up-to-date information before answering."
+            search_directive = "\n\n[WEB SEARCH TRIGGERED]\nThe user has explicitly requested to SEARCH THE WEB for the selected text. You MUST use the 'web_search' tool. Make sure to provide valid JSON with a 'query' key, e.g., {\"query\": \"your search term here\"}."
             clean_message = clean_message.replace("[WEB_SEARCH]", "").strip()
 
         # Save regular user message to memory

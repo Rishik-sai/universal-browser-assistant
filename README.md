@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge" alt="Manifest V3 Ready">
   <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge" alt="Python Version">
   <img src="https://img.shields.io/badge/FastAPI-0.100+-00a393?style=for-the-badge" alt="FastAPI Framework">
-  <img src="https://img.shields.io/badge/MongoDB-Mongoose-brightgreen?style=for-the-badge" alt="Mongoose Database">
+  <img src="https://img.shields.io/badge/MongoDB-Motor-brightgreen?style=for-the-badge" alt="Motor Database">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT Licensed">
 </p>
 

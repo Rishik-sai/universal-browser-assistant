@@ -11,3 +11,5 @@ tavily-python
 pytest
 httpx
 redis
+certifi
+slowapi

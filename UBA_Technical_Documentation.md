@@ -110,7 +110,7 @@ PAGE TEXT: {page_text[:3000]}
 """
 messages = [
     SystemMessage(content=system_instruction),
-    *memory_store[session_id]
+    *get_session_history(session_id)
 ]
 ai_response = await self.model.ainvoke(messages)
 ```
@@ -214,6 +214,7 @@ A compound index on `history` for `{ userId: 1, domain: 1 }` is utilized to opti
 ### Inference Pipeline
 - **Model Architecture:** LLaMA-3 (via Groq API). LLaMA-3 is an auto-regressive language model that uses an optimized transformer architecture.
 - **Hardware Optimization:** Instead of running inference on GPUs (NVIDIA A100/H100), the project leverages Groq's **LPU (Language Processing Unit)**. LPUs bypass the traditional memory bottleneck of GPUs by providing deterministic execution and massive SRAM pools, achieving inference speeds exceeding 800 tokens per second.
+- **Agent Tool-Calling Loop:** The core chat pipeline uses a LangChain ReAct (Reasoning and Acting) loop. By binding tools to the model (`bind_tools`), the LLM can autonomously decide when to query real-time data. A Tavily `@tool web_search` is exposed to the agent, allowing it to perform live web queries for information not present in its training data or the immediate page context.
 - **RAG Pipeline (Retrieval-Augmented Generation):** Rather than using a complex Vector Database (like Pinecone) for a simple page query, the architecture uses a "Zero-Shot Injection" technique. Up to 3000 characters of the active DOM are injected directly into the LLM's context window.
 
 ---
